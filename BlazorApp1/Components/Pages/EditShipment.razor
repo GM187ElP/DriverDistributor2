@@ -243,6 +243,7 @@
     void LoadData()
     {
         var shipment1 = dbContext.Shipments.Include(x => x.ShipmentNumbers).FirstOrDefault(s => s.Id == id) ?? new();
+
         Mapper.MapToDto(shipment1, dto);
         mainShipment = dbContext.Shipments.Include(x => x.ShipmentNumbers).AsNoTracking().FirstOrDefault(s => s.Id == id) ?? new();
         if (dto != null)
