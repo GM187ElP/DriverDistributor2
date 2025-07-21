@@ -1,0 +1,218 @@
+﻿@page "/"
+@using BlazorApp1.Data
+@using BlazorApp1.Entities
+@using System.Globalization
+@using Microsoft.EntityFrameworkCore
+
+@inject AppDbContext dbContext
+@inject NavigationManager nm
+
+<MudRTLProvider RightToLeft="true">
+    <div style="height: 100vh; width: 100vw; padding: 10px; box-sizing: border-box; display: flex; flex-direction: column;">
+
+        <PageTitle>لیست حواله ها</PageTitle>
+
+        <h3>لیست حواله ها</h3>
+
+        <div style="display: flex; gap: 10px;">
+            <Excel />
+
+            <MudSelect T="string"
+            @bind-Value="Month"
+            Dense="true"
+            FitContent="true"
+            Clearable="false">
+                @foreach (var month in monthList)
+                {
+                    <MudSelectItem Value="@month">@month</MudSelectItem>
+                }
+            </MudSelect>
+
+
+
+            @*    <PersianDatePicker />
+            <PersianDatePicker /> *@
+            <MudButton StartIcon="@Icons.Material.Filled.Refresh" IconColor="Color.Primary" @onclick="Refresh">
+                آپدیت
+            </MudButton>
+        </div>
+
+        <!-- ⚠️ This is the scrollable area with fixed header -->
+        <div style="flex: 1; overflow: hidden;">
+            <MudDataGrid T="ShipmentWithIndex"
+            Items="@indexedShipments"
+            Class="my-grid"
+            SortMode="SortMode.Multiple"
+            Filterable="true"
+            QuickFilter="@Filter"
+            FixedHeader="true"
+            Style="height: 100%;"
+            Dense="true"
+            Bordered="true"
+            Hover="true"
+            Striped="true">
+                <ToolBarContent>
+                    <MudTextField @bind-Value="_searchString"
+                    Placeholder="جستجو"
+                    Adornment="Adornment.Start"
+                    Immediate="true"
+                    AdornmentIcon="@Icons.Material.Filled.Search"
+                    IconSize="Size.Medium"
+                    Class="mt-0" />
+                </ToolBarContent>
+
+                <Columns>
+                    <SelectColumn T="Shipment" />
+                    <PropertyColumn Property="x => x.Index" HeaderStyle="background-color: #1976d2; color: white;" Title="ردیف" Filterable="false" StickyRight="true" />
+
+                    <TemplateColumn HeaderStyle="background-color: #1976d2; color: white;"
+                    Title="ویرایش" Filterable="false" StickyRight="true">
+                        <CellTemplate Context="row">
+                            <MudIconButton Icon="@Icons.Material.Filled.Edit"
+                            Color="Color.Primary"
+                            Size="Size.Small"
+                            OnClick="@(() => EditItem(row.Item))" />
+                        </CellTemplate>
+                    </TemplateColumn>
+
+
+
+                    <PropertyColumn Property="x => x.Shipment.ShipmentDatePersian" HeaderStyle="background-color: #1976d2; color: white;" Title="تاریخ" Filterable="false" StickyRight="true" />
+                    <PropertyColumn Property="x => x.Shipment.Weekday" Title="روز" HeaderStyle="background-color: #1976d2; color: white;" Filterable="false" />
+                    @* <PropertyColumn Property="x => x.Shipment.DriverPersonnelCode" HeaderStyle="background-color: #1976d2; color: white;" Title="کد پرسنلی راننده" Filterable="false" /> *@
+                    <PropertyColumn Property="x => x.Shipment.DriverName" HeaderStyle="background-color: #1976d2; color: white;" Title="راننده" Filterable="false" />
+                    @* <PropertyColumn Property="x => x.Shipment.DistributorPersonnelCode" HeaderStyle="background-color: #1976d2; color: white;" Title="کد پرسنلی موزع" Filterable="false" /> *@
+                    <PropertyColumn Property="x => x.Shipment.DistributorName" HeaderStyle="background-color: #1976d2; color: white;" Title="موزع" Filterable="false" />
+                    <PropertyColumn Property="x => x.Shipment.RouteName" HeaderStyle="background-color: #1976d2; color: white;" Title="مسیر" Filterable="false" />
+                    <PropertyColumn Property="x => x.Shipment.WarehouseName" HeaderStyle="background-color: #1976d2; color: white;" Title="انبار" Filterable="false" />
+                    <PropertyColumn Property="x => x.InvoiceCountFormatted" HeaderStyle="background-color: #1976d2; color: white;" Title="تعداد فاکتور" Filterable="false" />
+                    <PropertyColumn Property="x => x.InvoiceAmountFormatted" HeaderStyle="background-color: #1976d2; color: white;" Title="ریال فاکتور" Filterable="false" />
+                    <PropertyColumn Property="x => x.ShipmentNumbers" HeaderStyle="background-color: #1976d2; color: white;" Title="خروجی" Filterable="false" />
+                    <PropertyColumn Property="x => x.ReturnInvoiceCountFormatted" HeaderStyle="background-color: #1976d2; color: white;" Title="تعداد فاکتور مرجوعی" Filterable="false" />
+                    <PropertyColumn Property="x => x.ReturnInvoiceAmountFormatted" HeaderStyle="background-color: #1976d2; color: white;" Title="ریال فاکتور مرجوعی" Filterable="false" />
+                    <PropertyColumn Property="x => x.SecondServiceInvoiceCountFormatted" HeaderStyle="background-color: #1976d2; color: white;" Title="تعداد ف سرویس دوم" Filterable="false" />
+                    <PropertyColumn Property="x => x.SecondServiceInvoiceAmountFormatted" HeaderStyle="background-color: #1976d2; color: white;" Title="ریال ف سرویس دوم" Filterable="false" />
+                    <PropertyColumn Property="x => x.ThirdServiceInvoiceCountFormatted" HeaderStyle="background-color: #1976d2; color: white;" Title="تعداد ف سرویس سوم" Filterable="false" />
+                    <PropertyColumn Property="x => x.ThirdServiceInvoiceAmountFormatted" HeaderStyle="background-color: #1976d2; color: white;" Title="ریال ف سرویس سوم" Filterable="false" />
+                    <PropertyColumn Property="x => x.Shipment.HasVip" HeaderStyle="background-color: #1976d2; color: white;" Title="VIP" Filterable="false" />
+                    <PropertyColumn Property="x => x.NetInvoiceCountFormatted" HeaderStyle="background-color: #1976d2; color: white;" Title="تعداد خالص ف" Filterable="false" />
+                    <PropertyColumn Property="x => x.NetInvoiceAmountFormatted" HeaderStyle="background-color: #1976d2; color: white;" Title="ریال خالص ف" Filterable="false" />
+                </Columns>
+            </MudDataGrid>
+
+        </div>
+    </div>
+</MudRTLProvider>
+<style>
+
+
+
+</style>
+
+
+@code {
+    private readonly string[] monthList = { "فروردین", "اردیبهشت", "خرداد", "تیر", "اَمرداد", "شهریور", "مهر", "آبان", "آذر", "دی", "بهمن", "اسفند" };
+    private PersianCalendar persianCalendar = new();
+    private string _month = "فروردین";
+    private string? _selectedMonth;
+
+    void SetMonth()
+    {
+        var num = persianCalendar.GetMonth(DateTime.Now);
+        _month = monthList[num - 1];
+        _selectedMonth = num.ToString("00");
+    }
+
+    void ChangeMonth()
+    {
+        var num = Array.IndexOf(monthList, _month) + 1;
+        _selectedMonth = num.ToString("00");
+    }
+
+    public string Month
+    {
+        get => _month; set
+        {
+            _month = value;
+            ChangeMonth();
+        }
+    }
+
+    private  string shipmentNumbers=string.Empty;
+    private readonly Shipment shipment = new();
+    private List<Shipment> shipments = [];
+    private string _searchString;
+    public List<int> Count { get; set; } = [];
+
+
+    void Refresh() => LoadData();
+
+    protected override void OnInitialized()
+    {
+        base.OnInitializedAsync();
+
+        LoadData();
+    }
+
+
+
+    //meatadatagrid RowClick = "@RowClicked" RowContextMenuClick="RowRightClicked" SelectedItemsChanged="@SelectedItemsChanged"
+
+
+    private List<ShipmentWithIndex> indexedShipments = [];
+
+
+    void LoadData()
+    {
+        SetMonth();
+        shipments = dbContext.Shipments.Include(x=>x.ShipmentNumbers).ToList();
+        var a = shipments.Count;
+        indexedShipments = shipments.Select((s, i) => new ShipmentWithIndex
+            {
+                Index = i + 1,
+                Shipment = s
+            }).ToList();
+
+    
+        StateHasChanged();
+    }
+
+    private Func<ShipmentWithIndex, bool> Filter => s =>
+    {
+        bool matchesSearch = string.IsNullOrWhiteSpace(_searchString) || (
+        (s.Shipment.ShipmentDatePersian?.Contains(_searchString, StringComparison.OrdinalIgnoreCase) ?? false) ||
+        (s.Shipment.Weekday?.Contains(_searchString, StringComparison.OrdinalIgnoreCase) ?? false) ||
+        (s.Shipment.DriverName?.Contains(_searchString, StringComparison.OrdinalIgnoreCase) ?? false) ||
+        (s.Shipment.DistributorName?.Contains(_searchString, StringComparison.OrdinalIgnoreCase) ?? false) ||
+        (s.Shipment.RouteName?.Contains(_searchString, StringComparison.OrdinalIgnoreCase) ?? false) ||
+        (s.Shipment.WarehouseName?.Contains(_searchString, StringComparison.OrdinalIgnoreCase) ?? false) ||
+        s.Shipment.InvoiceCount.ToString().Contains(_searchString, StringComparison.OrdinalIgnoreCase) ||
+        s.Shipment.InvoiceAmount.ToString().Contains(_searchString, StringComparison.OrdinalIgnoreCase) ||
+        s.ShipmentNumbers.Contains(_searchString, StringComparison.OrdinalIgnoreCase))  ||
+        s.Shipment.ReturnInvoiceCount.ToString().Contains(_searchString, StringComparison.OrdinalIgnoreCase) ||
+        s.Shipment.ReturnInvoiceAmount.ToString().Contains(_searchString, StringComparison.OrdinalIgnoreCase) ||
+        s.Shipment.SecondServiceInvoiceCount.ToString().Contains(_searchString, StringComparison.OrdinalIgnoreCase) ||
+        s.Shipment.SecondServiceInvoiceAmount.ToString().Contains(_searchString, StringComparison.OrdinalIgnoreCase) ||
+        s.Shipment.ThirdServiceInvoiceCount.ToString().Contains(_searchString, StringComparison.OrdinalIgnoreCase) ||
+        s.Shipment.HasVip.ToString().Contains(_searchString, StringComparison.OrdinalIgnoreCase) ||
+        s.Shipment.DriverPersonnelCode.ToString().Contains(_searchString, StringComparison.OrdinalIgnoreCase) ||
+        s.Shipment.DistributorPersonnelCode.ToString().Contains(_searchString, StringComparison.OrdinalIgnoreCase) ||
+        s.Shipment.NetInvoiceCount.ToString().Contains(_searchString, StringComparison.OrdinalIgnoreCase) ||
+        s.Shipment.NetInvoiceAmount.ToString().Contains(_searchString, StringComparison.OrdinalIgnoreCase
+    );
+        bool matchesMonth = string.IsNullOrWhiteSpace(_selectedMonth) ||
+                  (s.Shipment.ShipmentDatePersian?.Contains($"/{_selectedMonth}/") ?? false);
+
+        return matchesSearch && matchesMonth;
+    };
+
+
+    void EditItem(ShipmentWithIndex row)
+    {
+        nm.NavigateTo($"/edit-shipment/{row.Shipment.Id}");
+    }
+
+
+
+}
+
