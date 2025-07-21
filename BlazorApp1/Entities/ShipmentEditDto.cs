@@ -1,15 +1,11 @@
-﻿using System.ComponentModel.DataAnnotations;
-using System.Globalization;
-using System.Reflection;
+﻿using System.Globalization;
 
 namespace BlazorApp1.Entities;
 
-
-public class Shipment
+public class ShipmentEditDto
 {
     private DateTime? _shipmentDateGregorian;
     private string _shipmentDatePersian;
-    private string _persianWeekday;
     public long Id { get; set; }
 
     public DateTime? ShipmentDateGregorian
@@ -19,7 +15,6 @@ public class Shipment
         {
             _shipmentDateGregorian = value;
             _shipmentDatePersian = GregorianToPersian(value);
-            _persianWeekday = PersianWeekday(value);
         }
     }
 
@@ -27,11 +22,6 @@ public class Shipment
     {
         get => _shipmentDatePersian;
         private set => _shipmentDatePersian = value;
-    }
-    public string Weekday
-    {
-        get => _persianWeekday;
-        private set => _persianWeekday = value;
     }
 
     public int? DriverPersonnelCode { get; set; }
@@ -42,7 +32,7 @@ public class Shipment
     public string WarehouseName { get; set; }
     public int? InvoiceCount { get; set; } = 0;
     public long? InvoiceAmount { get; set; } = 0;
-    public ICollection<ShipmentNumber> ShipmentNumbers { get; set; } = [];
+    public List<int> ShipmentNumbers { get; set; } = [];
     public int? ReturnInvoiceCount { get; set; } = 0;
     public long? ReturnInvoiceAmount { get; set; } = 0;
     public int? SecondServiceInvoiceCount { get; set; } = 0;
@@ -50,34 +40,11 @@ public class Shipment
     public long? SecondServiceInvoiceAmount { get; set; } = 0;
     public long? ThirdServiceInvoiceAmount { get; set; } = 0;
 
-    public int? NetInvoiceCount => InvoiceCount + SecondServiceInvoiceCount + ThirdServiceInvoiceCount - ReturnInvoiceCount;
-    public long? NetInvoiceAmount => InvoiceAmount + SecondServiceInvoiceAmount + ThirdServiceInvoiceAmount - ReturnInvoiceAmount;
-
     public bool HasVip { get; set; } = false;
 
     public bool IsException { get; set; } = false;
 
-    public Driver Driver { get; set; }
-    public Route Route { get; set; }
-    public Warehouse Warehouse { get; set; }
-    public Distributor Distributor { get; set; }
 
-    private string PersianWeekday(DateTime? date)
-    {
-        if (date is null)
-            return "نا معتبر";
-        return date.Value.DayOfWeek switch
-        {
-            DayOfWeek.Saturday => "شنبه",
-            DayOfWeek.Sunday => "یکشنبه",
-            DayOfWeek.Monday => "دوشنبه",
-            DayOfWeek.Tuesday => "سه شنبه",
-            DayOfWeek.Wednesday => "چهارشنبه",
-            DayOfWeek.Thursday => "پنجشنبه",
-            DayOfWeek.Friday => "جمعه",
-            _ => "نا معتبر"
-        };
-    }
     private string? GregorianToPersian(DateTime? date)
     {
         if (date is null) return null;
@@ -85,9 +52,6 @@ public class Shipment
         var d = date.Value;
         return $"{pc.GetYear(d):0000}/{pc.GetMonth(d):00}/{pc.GetDayOfMonth(d):00}";
     }
-
-
-
 
     public bool Equals(Shipment? other)
     {
@@ -102,8 +66,8 @@ public class Shipment
             var otherValue = prop.GetValue(other);
             if (prop.Name == "ShipmentNumbers")
             {
-                var thisNums = (thisValue as string).Split(',') ?? [];
-                var otherNums = (otherValue as string).Split(',') ?? [];
+                var thisNums = (thisValue as string).Split('-') ?? [];
+                var otherNums = (otherValue as string).Split('-') ?? [];
 
                 if (!thisNums.All(otherNums.Contains) || !otherNums.All(thisNums.Contains))
                     return false;
@@ -125,5 +89,4 @@ public class Shipment
 
         return true;
     }
-
 }

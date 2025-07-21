@@ -87,13 +87,13 @@
                     <MudNumericField @bind-Value="dto.InvoiceCount" Label="تعداد فاکتور" Variant="Variant.Outlined" Min="0" Disabled=dto.IsException Required=@(!dto.IsException) />
                     <MudNumericField @bind-Value="dto.InvoiceAmount" Label="ریال خالص فاکتور" Variant="Variant.Outlined" Min="0" Disabled=dto.IsException Required=@(!dto.IsException) />
 
-                    @for (int i = 0; i < shipmentNumbers.Count; i++)
+                    @for (int i = 0; i < dto.ShipmentNumbers.Count; i++)
                     {
                         var index = i;
                         <div style="display: flex; gap: 10px;">
                             <MudNumericField T="int"
                             Label="خروجی"
-                            @bind-Value="shipmentNumbers[index].Number"
+                            @bind-Value="dto.ShipmentNumbers[index]"
                             Variant="Variant.Outlined"
                             Class="my-2" />
 
