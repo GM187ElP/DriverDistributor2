@@ -3,24 +3,21 @@
 @using System.Text.Json
 @inject IWebHostEnvironment env
 
- <MudStack Direction="Row" AlignItems="AlignItems.Start" Spacing="2" Class="inline-stack"> 
-
-    <!-- Text input that toggles the date picker popover -->
-    <!-- PersianDatePicker.razor -->
-        <MudTextField Value="@DateString"
-                      ReadOnly="true"
-                      Adornment="Adornment.End"
-                      AdornmentIcon="@Icons.Material.Filled.DateRange"
-                      OnAdornmentClick="TogglePicker" />
-
-
+<MudStack Direction="Row" AlignItems="AlignItems.Start" Spacing="2" Class="inline-stack">
+    <MudTextField Value="@Persian.Date"
+    Label=@Label
+    ReadOnly="true"
+    Adornment="Adornment.End"
+    AdornmentIcon="@Icons.Material.Filled.DateRange"
+    OnAdornmentClick="ToggleDatePicker"
+    @onclick="ToggleDatePicker" />
 
     <!-- Date picker popover -->
-    <MudPopover Open="@IsOpen"
-                AnchorOrigin="Origin.BottomCenter"
-                TransformOrigin="Origin.TopCenter"
-                CloseOnOutsideClick="true"
-                OnClose="ClosePicker">
+    <MudPopover Open="@_isDatePickerOpen"
+    AnchorOrigin="Origin.BottomCenter"
+    TransformOrigin="Origin.TopCenter"
+    CloseOnOutsideClick="true"
+    OnClose="ClosePicker">
         <MudPaper Class="pa-4" Style="width: 300px;">
 
             <!-- Navigation: month/year/today -->
@@ -29,52 +26,59 @@
 
                 <!-- Month Name Button -->
                 <MudButton Typo="Typo.h6" Class="mx-auto" OnClick="ToggleMonthPicker">
-                    @GetMonthName()
+                    @Persian.MonthString
                 </MudButton>
 
                 <MudButton Typo="Typo.h6" Class="mx-auto" OnClick="ToggleYearPicker">
-                    @GetYearName()
+                    @Persian.Year
                 </MudButton>
 
-                <MudPopover Open="@IsYearPickerOpen"
-                            AnchorOrigin="Origin.BottomCenter"
-                            TransformOrigin="Origin.TopCenter"
-                            CloseOnOutsideClick="true"
-                            OnClose="() => IsYearPickerOpen = false">
+                <MudPopover Open="@_isYearPickerOpen"
+                AnchorOrigin="Origin.BottomCenter"
+                TransformOrigin="Origin.TopCenter"
+                CloseOnOutsideClick="true"
+                OnClose="() => IsYearPickerOpen = false">
                     <MudPaper Class="pa-2" Style="width: 150px; text-align:center;">
 
                         <MudNumericField T="int"
-                                         @bind-Value="_tempYearInput"
-                                         Min="1279"
-                                         Max="9377"
-                                         Dense="true"
-                                         Class="mud-width-full year-input"
-                                         Variant="Variant.Outlined"
-                                         InputClass="text-center" />
+                        @bind-Value="_tempYearInput"
+                        Min="1279"
+                        Max="9377"
+                        Dense="true"
+                        Class="mud-width-full year-input"
+                        Variant="Variant.Outlined"
+                        InputClass="text-center" />
 
                         <MudButton Size="Size.Small"
-                                   Variant="Variant.Outlined"
-                                   Class="mt-2 mud-width-full"
-                                   OnClick="ApplyYearFromInput">
+                        Variant="Variant.Outlined"
+                        Class="mt-2 mud-width-full"
+                        OnClick="ApplyYearFromInput">
                             تایید
                         </MudButton>
 
                     </MudPaper>
                 </MudPopover>
 
-                <MudButton Class="mt-2" Variant="Variant.Text" OnClick="GoToToday">
+                <MudButton Class="mt-2" Variant="Variant.Text" OnClick="@(()=>GoToDay(-1))">
+                    دیروز
+                </MudButton>
+
+                <MudButton Class="mt-2" Variant="Variant.Text" OnClick="@(()=>GoToDay())">
                     امروز
                 </MudButton>
 
+                <MudButton Class="mt-2" Variant="Variant.Text" OnClick="@(()=>GoToDay(1))">
+                    فردا
+                </MudButton>
                 <MudIconButton Icon="@Icons.Material.Filled.ArrowBackIos" OnClick="@NextMonth" />
             </div>
 
             <!-- Month List Popover -->
-            <MudPopover Open="@IsMonthListOpen"
-                        AnchorOrigin="Origin.CenterCenter"
-                        TransformOrigin="Origin.TopCenter"
-                        CloseOnOutsideClick="true"
-                        OnClose="CloseMonthPicker">
+            <MudPopover Open="@_isMonthPickerOpen"
+            AnchorOrigin="Origin.CenterCenter"
+            TransformOrigin="Origin.TopCenter"
+            CloseOnOutsideClick="true"
+            OnClose="CloseMonthPicker">
                 <div style="width: 220px; max-width: 100%; padding: 8px;">
                     <table class="calendar-month-table">
                         @for (int i = 0; i < 3; i++)
@@ -85,7 +89,7 @@
                                     var index = i * 4 + j;
                                     <td>
                                         <button class="@(IsSelectedMonth(index + 1) ? "selected-month" : "")"
-                                                @onclick="@(() => SelectMonth(index + 1))">
+                                        @onclick="@(() => SelectMonth(index + 1))">
                                             @monthList[index]
                                         </button>
                                     </td>
@@ -122,261 +126,247 @@
                     }
                 </tbody>
             </table>
-
         </MudPaper>
     </MudPopover>
-
-                  
-     </MudStack> 
+</MudStack>
 
 
-    
+
 
 <style>
 
 
     .small-date-input {
-        width: auto !important;
-        max-width: 160px;
+    width: auto !important;
+    max-width: 160px;
     }
+
     .inline-field {
-        display: inline-flex;
-        vertical-align: baseline;
+    display: inline-flex;
+    vertical-align: baseline;
     }
 
 
     .calendar-table {
-        width: 100%;
-        border-collapse: collapse;
-        table-layout: fixed;
-        text-align: center;
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: fixed;
+    text-align: center;
     }
 
-        .calendar-table thead tr {
-            border-bottom: 5px solid transparent;
-            background-color: lightgray;
-        }
+    .calendar-table thead tr {
+    border-bottom: 5px solid transparent;
+    background-color: lightgray;
+    }
 
 
     .year-input input {
-        text-align: center !important;
-        font-size: 0.875rem;
+    text-align: center !important;
+    font-size: 0.875rem;
     }
 
     .calendar-month-table {
-        width: 100%;
-        border-collapse: collapse;
-        table-layout: fixed;
-        text-align: center;
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: fixed;
+    text-align: center;
     }
 
-        .calendar-month-table td button {
-            width: 100%;
-            padding: 6px 0;
-            border: none;
-            background: none;
-            cursor: pointer;
-        }
+    .calendar-month-table td button {
+    width: 100%;
+    padding: 6px 0;
+    border: none;
+    background: none;
+    cursor: pointer;
+    }
 
 
     .calendar-table td button {
-        width: 100%;
-        height: 100%;
-        background: none;
-        border: none;
+    width: 100%;
+    height: 100%;
+    background: none;
+    border: none;
     }
 
     .calendar-table td.holiday {
-        background-color: #ffe5e5;
+    background-color: #ffe5e5;
     }
 
     .calendar-table td.today {
-        border: 2px solid #1976d2;
+    border: 2px solid #1976d2;
     }
 
     .calendar-table td.selected {
-        background-color: #cce5ff;
+    background-color: #cce5ff;
     }
 
     .calendar-table td.faded {
-        opacity: 0.4;
+    opacity: 0.4;
     }
 
     .selected-month {
-        background-color: cyan;
-        color: blue;
-        border-radius: 4px;
+    background-color: cyan;
+    color: blue;
+    border-radius: 4px;
     }
 
     .inline-stack {
-        display: inline-flex;
-        align-items: center;
+    display: inline-flex;
+    align-items: center;
     }
 
 </style>
-    
-
-
 
 @code {
-    private PersianCalendar Pc = new PersianCalendar();
-
-    private bool IsOpen { get; set; }
-    public bool IsMonthListOpen { get; set; }
-    public bool IsYearListOpen { get; set; }
-    private bool IsYearPickerOpen = false;
-
-    private DateTime CurrentMonth { get; set; }
-    private int _selectedYear;
-
-    private List<Day> _gridDays = new List<Day>();
-    private Dictionary<string, List<int[]>> _holidays = new Dictionary<string, List<int[]>>();
-
-    private readonly string[] monthList = { "فروردین", "اردیبهشت", "خرداد", "تیر", "اَمرداد", "شهریور", "مهر", "آبان", "آذر", "دی", "بهمن", "اسفند" };
-    private readonly string[] PersianDayNames = { "ش", "ی", "د", "س", "چ", "پ", "ج" };
-
-    [Parameter] public DateTime? SelectedDate { get; set; }
-    [Parameter] public EventCallback<DateTime?> SelectedDateChanged { get; set; }
+    [Parameter] public PersianCalendarClass? Persian { get; set; } 
+    [Parameter] public GregorianCalendarClass? Gregorian { get; set; } 
+    [Parameter] public EventCallback<string> SelectedDateChanged { get; set; }
     [Parameter] public string Label { get; set; } = "تاریخ";
 
-    private int baseScrollStartYear => Pc.GetYear(DateTime.Today) - 100;
-    private int yearPickerStartIndex => Pc.GetYear(SelectedDate ?? DateTime.Today) - baseScrollStartYear;
+    private readonly string[] PersianDayNames = { "ش", "ی", "د", "س", "چ", "پ", "ج" };
+    private readonly string[] monthList = { "فروردین", "اردیبهشت", "خرداد", "تیر", "اَمرداد", "شهریور", "مهر", "آبان", "آذر", "دی", "بهمن", "اسفند" };
+
+    private int _selectedYear;
+    private int _tempYearInput;
+    private bool _isDatePickerOpen = false;
+    private bool _isMonthPickerOpen = false;
+    private bool _isYearPickerOpen = false;
+    private DateTime _currentMonth;
+
+    private List<Day> _gridDays = new();
+    private Dictionary<string, List<int[]>> _holidays = new();
+
+    private PersianCalendar Pc;
 
     protected override void OnInitialized()
     {
-        base.OnInitialized();
-
-        // Load holidays once
+        Pc = new();
+        var now = DateTime.Today;
         string path = Path.Combine(env.ContentRootPath, "wwwroot", "json", "holidays.json");
+
         if (File.Exists(path))
         {
             string json = File.ReadAllText(path);
-            _holidays = JsonSerializer.Deserialize<Dictionary<string, List<int[]>>>(json) ?? new Dictionary<string, List<int[]>>();
+            _holidays = JsonSerializer.Deserialize<Dictionary<string, List<int[]>>>(json) ?? new();
         }
-        CurrentMonth = SelectedDate ?? DateTime.Now;
-        _selectedYear = Pc.GetYear(CurrentMonth);
-        _tempYearInput = Pc.GetYear(CurrentMonth);
+
+        if (Gregorian is null || Persian is null)
+        {
+            if (Gregorian is null)
+                Gregorian.Date = DateTime.Today;
+            else
+                Persian.Date = $"{Pc.GetYear(now):0000}/{Pc.GetMonth(now):00}/{Pc.GetDayOfMonth(now):00}";
+        }
+
+        _currentMonth = Gregorian.Date;
+        _selectedYear = Pc.GetYear(_currentMonth);
+        _tempYearInput = Pc.GetYear(_currentMonth);
+        base.OnInitialized();
         UpdateGridDays();
     }
-
-    private int _tempYearInput;
 
     private void ApplyYearFromInput()
     {
         _selectedYear = _tempYearInput;
 
-        // update calendar with selected year
-        var month = Pc.GetMonth(CurrentMonth);
-        CurrentMonth = Pc.ToDateTime(_selectedYear, month, 1, 0, 0, 0, 0);
+        var month = Pc.GetMonth(_currentMonth);
+        _currentMonth = Pc.ToDateTime(_selectedYear, month, 1, 0, 0, 0, 0);
         UpdateGridDays();
 
-        IsYearPickerOpen = false;
+        _isYearPickerOpen = false;
     }
 
-    private void HandleYearKeyDown(KeyboardEventArgs e)
+    private void ToggleDatePicker() => _isDatePickerOpen = !_isDatePickerOpen; // datefield
+    private void CloseDatePicker() => _isDatePickerOpen = false;
+
+    private void ToggleMonthPicker() => _isMonthPickerOpen = !_isMonthPickerOpen; // month button
+    private void CloseMonthPicker() => _isMonthPickerOpen = false;
+
+    private void ToggleYearPicker()
     {
-        if (e.Key == "Enter")
-        {
-            ApplyYearFromInput();
-        }
-    }
+        _tempYearInput = Pc.GetYear(_currentMonth);
+        _isYearPickerOpen = !_isYearPickerOpen;
+    } // year button
+    private void CloseYearPicker() => _isYearPickerOpen = false;
 
-
-
-    string DateString => SelectedDate == null ? "" : FormatPersianDate(SelectedDate.Value);
-
-    void TogglePicker() => IsOpen = !IsOpen;
-    void ClosePicker() => IsOpen = false;
-
-    void ToggleMonthPicker() => IsMonthListOpen = !IsMonthListOpen;
-    void CloseMonthPicker() => IsMonthListOpen = false;
-
-    void ToggleYearPicker()
+    private void SelectMonth(int month)
     {
-        _tempYearInput = Pc.GetYear(CurrentMonth);
-        IsYearPickerOpen = !IsYearPickerOpen;
-    }
-
-    void CloseYearPicker() => IsYearListOpen = false;
-
-    void SelectMonth(int month)
-    {
-        int year = Pc.GetYear(CurrentMonth);
-        CurrentMonth = Pc.ToDateTime(year, month, 1, 0, 0, 0, 0);
+        int year = Pc.GetYear(_currentMonth);
+        _currentMonth = Pc.ToDateTime(year, month, 1, 0, 0, 0, 0);
         UpdateGridDays();
-        IsMonthListOpen = false;
-    }
+        _isMonthPickerOpen = false;
+    } // month popover
 
-    bool IsSelectedMonth(int month)
+    private bool IsSelectedMonth(int month) => Pc.GetMonth(_currentMonth) == month; // month popover(marking the current month)
+
+    private void PrevMonth() // prev month button
     {
-        var a = Pc.GetMonth(CurrentMonth);
-        return Pc.GetMonth(CurrentMonth) == month;
-    }
-
-
-    void PrevMonth()
-    {
-        CurrentMonth = CurrentMonth.AddMonths(-1);
+        _currentMonth = _currentMonth.AddMonths(-1);
         UpdateGridDays();
     }
 
-    void NextMonth()
+    private void NextMonth() // next month button
     {
-        CurrentMonth = CurrentMonth.AddMonths(1);
+        _currentMonth = _currentMonth.AddMonths(1);
         UpdateGridDays();
     }
 
-    void SelectDay(DateTime day)
+    private void SelectDay(DateTime date, DayOfWeek weekStartDay = DayOfWeek.Saturday) // daysgrid onclick event
     {
-        SelectedDate = day;
-        SelectedDateChanged.InvokeAsync(day);
-        CurrentMonth = day;
+        var year = Pc.GetYear(date);
+        var month = Pc.GetMonth(date);
+        var dayOfMonth = Pc.GetDayOfMonth(date);
+
+        Persian.GregorianDate = date;
+        Persian.Date = $"{year:0000}/{month:00}/{dayOfMonth:00}";
+        Persian.DayOfMonth = dayOfMonth.ToString("00");
+        Persian.NumberOfDaysInMonth = Pc.GetDaysInMonth(year, month);
+        Persian.NumberOfDaysInYear = Pc.GetDaysInYear(year);
+        Persian.DayOfWeek = GetPersianWeekday(Pc.GetDayOfWeek(date));
+        Persian.DayOfYear = Pc.GetDayOfYear(date).ToString("000");
+        Persian.Month = month.ToString("00");
+        Persian.MonthString = GetPersianMonthName(month);
+        Persian.WeekOfYear = Pc.GetWeekOfYear(date, CalendarWeekRule.FirstFullWeek, weekStartDay).ToString("00");
+        Persian.Year = year.ToString("0000");
+        Persian.IsLeapYear = Pc.IsLeapYear(year);
+
+        Gregorian.Date = date;
+        Gregorian.DateString = date.ToString("yyyy/MM/dd");
+        Gregorian.DayOfMonth = date.ToString("dd");
+        Gregorian.DayOfWeek = date.ToString("dddd");
+        Gregorian.DayOfYear = date.DayOfYear.ToString("000");
+        Gregorian.Month = date.ToString("MM");
+        Gregorian.MonthString = date.ToString("MMMM");
+        Gregorian.MonthStringAbbr = date.ToString("MMM");
+        Gregorian.Year = date.Year.ToString("0000");
+        Gregorian.IsLeapYear = DateTime.IsLeapYear(date.Year);
+
+        SelectedDateChanged.InvokeAsync(date);
+        _currentMonth = date;
         UpdateGridDays();
-        IsOpen = false;
+        _isDatePickerOpen = false;
     }
 
-    void SelectYear(int year)
+    private void GoToDay(int offset=0) // today button, tommorow button
     {
-        var month = Pc.GetMonth(CurrentMonth);
-        CurrentMonth = Pc.ToDateTime(year, month, 1, 0, 0, 0, 0);
-        _selectedYear = year;
+        var today = DateTime.Today.AddDays(offset);
+        Gregorian.Date = today;
+        _currentMonth = today;
+        _selectedYear = Pc.GetYear(today);
+
         UpdateGridDays();
-        IsYearListOpen = false;
-        IsYearPickerOpen = false;
+        SelectedDateChanged.InvokeAsync(Gregorian.Date);
     }
 
-    bool IsSelectedYear(int year)
+    private void UpdateGridDays() // nextmonth, prevmonth,ApplyYearFromInput, oninit, selectmonth, selectday, gototoday
     {
-        return Pc.GetYear(SelectedDate ?? DateTime.Today) == year;
-    }
-
-
-    string GetYearName() => _selectedYear.ToString();
-
-    string GetMonthName()
-    {
-        int month = Pc.GetMonth(CurrentMonth);
-        return GetPersianMonthName(month);
-    }
-
-    void GoToToday()
-    {
-        SelectedDate = DateTime.Today;
-        CurrentMonth = DateTime.Today;
-        _selectedYear = Pc.GetYear(CurrentMonth);
-        UpdateGridDays();
-        SelectedDateChanged.InvokeAsync(SelectedDate);
-    }
-
-    void UpdateGridDays()
-    {
-        int year = Pc.GetYear(CurrentMonth);
-        int month = Pc.GetMonth(CurrentMonth);
+        int year = Pc.GetYear(_currentMonth);
+        int month = Pc.GetMonth(_currentMonth);
         _gridDays = MonthRange(year, month);
         AddHolidays(_gridDays);
     }
 
-    void AddHolidays(List<Day> gridDays)
+    private void AddHolidays(List<Day> gridDays) // UpdateGridDays
     {
         if (_holidays == null) return;
 
@@ -401,9 +391,9 @@
         }
     }
 
-    int GetMonthLengthWeekCount(int year, int month)
+    private int GetMonthLengthWeekCount(int year, int month) // days grid
     {
-        var monthLength = GetPersianMonthLength(year, month);
+        var monthLength = Pc.GetDaysInMonth(year,month);
         var firstDay = Pc.ToDateTime(year, month, 1, 0, 0, 0, 0);
         if ((monthLength == 31 && (firstDay.DayOfWeek == DayOfWeek.Thursday || firstDay.DayOfWeek == DayOfWeek.Friday)) || (monthLength == 30 && firstDay.DayOfWeek == DayOfWeek.Friday))
             return 6;
@@ -411,10 +401,10 @@
             return 5;
     }
 
-    List<Day> MonthRange(int year, int month)
+    private List<Day> MonthRange(int year, int month) // updategriddays
     {
         var thisMonthFirstDate = Pc.ToDateTime(year, month, 1, 0, 0, 0, 0);
-        var thisMonthLastDate = thisMonthFirstDate.AddDays(GetPersianMonthLength(year, month) - 1);
+        var thisMonthLastDate = thisMonthFirstDate.AddDays(Pc.GetDaysInMonth(year, month) - 1);
 
         var gridFirstDate = thisMonthFirstDate.AddDays(-PersianWeekday(thisMonthFirstDate.DayOfWeek));
         var gridLastDate = thisMonthLastDate.AddDays(6 - PersianWeekday(thisMonthLastDate.DayOfWeek));
@@ -450,7 +440,7 @@
         return gridDaysList;
     }
 
-    int PersianWeekday(DayOfWeek dayOfWeek) => dayOfWeek switch
+    private int PersianWeekday(DayOfWeek dayOfWeek) => dayOfWeek switch
     {
         DayOfWeek.Saturday => 0,
         DayOfWeek.Sunday => 1,
@@ -460,32 +450,9 @@
         DayOfWeek.Thursday => 5,
         DayOfWeek.Friday => 6,
         _ => 0
-    };
+    }; // month range
 
-    int GetPersianMonthLength(int year, int month) => month switch
-    {
-        <= 6 => 31,
-        <= 11 => 30,
-        12 => MonthLength(year),
-        _ => 0
-    };
-
-    int MonthLength(int year)
-    {
-        int monthLength = 29;
-        try
-        {
-            Pc.ToDateTime(year, 12, 30, 0, 0, 0, 0);
-            monthLength = 30;
-        }
-        catch
-        {
-            // Leap year not detected; keep 29
-        }
-        return monthLength;
-    }
-
-    string GetPersianMonthName(int month) => month switch
+    private string GetPersianMonthName(int month) => month switch
     {
         1 => "فروردین",
         2 => "اردیبهشت",
@@ -500,17 +467,21 @@
         11 => "بهمن",
         12 => "اسفند",
         _ => ""
-    };
+    }; // select day
 
-    string FormatPersianDate(DateTime dt)
+    private string GetPersianWeekday(DayOfWeek day) => day switch
     {
-        var y = Pc.GetYear(dt);
-        var m = Pc.GetMonth(dt);
-        var d = Pc.GetDayOfMonth(dt);
-        return $"{y:0000}/{m:00}/{d:00}";
-    }
+        DayOfWeek.Saturday => "شنبه",
+        DayOfWeek.Sunday => "یکشنبه",
+        DayOfWeek.Monday => "دوشنبه",
+        DayOfWeek.Tuesday => "سه شنبه",
+        DayOfWeek.Wednesday => "چهارشنبه",
+        DayOfWeek.Thursday => "پنجشنبه",
+        DayOfWeek.Friday => "جمعه",
+        _ => ""
+    }; // select day
 
-    string GetCellClass(Day day)
+    private string GetCellClass(Day day) // days grid
     {
         var classes = new List<string>();
 
@@ -520,26 +491,16 @@
         if (day.Date.Date == DateTime.Today)
             classes.Add("today");
 
-        if (SelectedDate.HasValue && day.Date.Date == SelectedDate.Value.Date)
+        if (day.Date.Date == Gregorian.Date)
             classes.Add("selected");
 
-        // Fade days from other months
         if (day.PersianMonth != _gridDays[21].PersianMonth)
             classes.Add("faded");
 
         return string.Join(" ", classes);
     }
 
-    MudBlazor.Variant GetDayVariant(DateTime day)
-    {
-        if (SelectedDate.HasValue && SelectedDate.Value.Date == day.Date)
-            return MudBlazor.Variant.Outlined;
-        if (day.Date == DateTime.Today)
-            return MudBlazor.Variant.Outlined;
-        return MudBlazor.Variant.Text;
-    }
-
-    class Day
+    private class Day
     {
         public Day(DateTime date, string weekday, bool isHoliday, int persianYear, int persianMonth, int persianDay)
         {
@@ -559,9 +520,88 @@
         public int PersianDay { get; set; }
     }
 
-    class DayMonthDto
+    public class PersianCalendarClass
     {
-        public int Month { get; set; }
-        public int Day { get; set; }
+        public DateTime GregorianDate { get; set; }
+        public string Date { get; set; }
+        public string DayOfMonth { get; set; }
+        public int NumberOfDaysInMonth { get; set; }
+        public int NumberOfDaysInYear { get; set; }
+        public string DayOfWeek { get; set; }
+        public string DayOfYear { get; set; }
+        public string Month { get; set; }
+        public string MonthString { get; set; }
+        public string WeekOfYear { get; set; }
+        public string Year { get; set; }
+        public bool IsLeapYear { get; set; }
     }
+
+    public class GregorianCalendarClass
+    {
+        public DateTime Date { get; set; }
+        public string DateString { get; set; }
+        public string DayOfMonth { get; set; }
+        public string DayOfWeek { get; set; }
+        public string DayOfYear { get; set; }
+        public string Month { get; set; }
+        public string MonthString { get; set; }
+        public string MonthStringAbbr { get; set; }
+        public string Year { get; set; }
+        public bool IsLeapYear { get; set; }
+    }
+}
+
+@code{
+   // private int GetPersianMonthLength(int year, int month) => month switch
+   //  {
+   //      <= 6 => 31,
+   //      <= 11 => 30,
+   //      12 => MonthLength(year),
+   //      _ => 0
+   //  };
+
+    // private int MonthLength(int year)
+    // {
+    //     int monthLength = 29;
+    //     try
+    //     {
+    //         Pc.ToDateTime(year, 12, 30, 0, 0, 0, 0);
+    //         monthLength = 30;
+    //     }
+    //     catch
+    //     {
+    //     }
+    //     return monthLength;
+    // }
+
+    // private string FormatPersianDate(DateTime dt)
+    // {
+    //     var y = Pc.GetYear(dt);
+    //     var m = Pc.GetMonth(dt);
+    //     var d = Pc.GetDayOfMonth(dt);
+    //     return $"{y:0000}/{m:00}/{d:00}";
+    // }
+
+    // private MudBlazor.Variant GetDayVariant(DateTime day)
+    // {
+    //     if (Gregorian.Date == day.Date)
+    //         return MudBlazor.Variant.Outlined;
+    //     if (day.Date == DateTime.Today)
+    //         return MudBlazor.Variant.Outlined;
+    //     return MudBlazor.Variant.Text;
+    // }
+
+    // private class DayMonthDto
+    // {
+    //     public int Month { get; set; }
+    //     public int Day { get; set; }
+    // }
+
+    // int StringToInteger(string stringData)
+    // {
+    //     if (int.TryParse(stringData, out int integerData))
+    //         return integerData;
+    //     else
+    //         return 1;
+    // }
 }

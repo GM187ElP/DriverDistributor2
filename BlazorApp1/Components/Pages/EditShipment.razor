@@ -82,7 +82,7 @@
                     Disabled=dto.IsException
                     Required=@(!dto.IsException) />
 
-                    <PersianDatePicker @bind-SelectedDate="dto.ShipmentDateGregorian" />
+                    <PersianDatePicker @bind-GregorianDate="dto.ShipmentDateGregorian" />
 
                     <MudNumericField @bind-Value="dto.InvoiceCount" Label="تعداد فاکتور" Variant="Variant.Outlined" Min="0" Disabled=dto.IsException Required=@(!dto.IsException) />
                     <MudNumericField @bind-Value="dto.InvoiceAmount" Label="ریال خالص فاکتور" Variant="Variant.Outlined" Min="0" Disabled=dto.IsException Required=@(!dto.IsException) />
