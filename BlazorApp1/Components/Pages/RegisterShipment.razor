@@ -82,7 +82,7 @@
                     Required=@(!IsException) />
 
                     <div class="mt-5">
-                        <PersianDatePicker @bind-Persian="Persian" />
+                        <PersianDatePicker @bind-Value="dto.ShipmentDatePersian" />
                     </div>
 
                     <MudNumericField Class="mt-5" @bind-Value="dto.InvoiceCount" Label="تعداد فاکتور" Variant="Variant.Outlined" Min="0" Disabled=IsException Required=@(!IsException) />
