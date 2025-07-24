@@ -1,7 +1,37 @@
 ﻿@page "/test"
+@using static BlazorApp1.Components.PersianDatePicker
 
-<h3>من ارسلان هستمسلام</h3>
+
+
+
+<PersianDatePicker @ref=datePicker2 Delimiter="'_'" Persian="Calendar1" Label="arsalan" />
+<PersianDatePicker @ref=datePicker2 Delimiter="','" Persian="Calendar2" Label="arsalan" />
+<PersianDatePicker @ref=datePicker3 Delimiter="'-'" Persian="Calendar3" Label="arsalan" />
+
+
 
 @code {
+    // private PersianDatePicker datePicker1;
 
+    private PersianCalendarClass Calendar1;
+    private PersianCalendarClass Calendar2;
+    private PersianCalendarClass Calendar3;
+    private PersianDatePicker datePicker1;
+    private PersianDatePicker datePicker2;
+    private PersianDatePicker datePicker3;
+
+    protected override void OnInitialized()
+    {
+        Calendar1 = new(DateTime.Today.AddDays(1));
+        Calendar2 = new(1403, 5, 6, CalendarType.Persian);
+        Calendar3 = new(2025, 3, 5, CalendarType.Gregorian);
+        base.OnInitialized();
+    }
+
+    void printe()
+    {
+        Console.WriteLine(datePicker1.Gregorian.DayOfWeek);
+        Console.WriteLine(datePicker2.Persian.DayOfYear);
+        Console.WriteLine(datePicker3.Gregorian.DayOfWeek);
+    }
 }
