@@ -4,9 +4,9 @@
 
 
 
-<PersianDatePicker @ref=datePicker2 Delimiter="'_'" Persian="Calendar1" Label="arsalan" />
-<PersianDatePicker @ref=datePicker2 Delimiter="','" Persian="Calendar2" Label="arsalan" />
-<PersianDatePicker @ref=datePicker3 Delimiter="'-'" Persian="Calendar3" Label="arsalan" />
+<PersianDatePicker SecondWeekendDay="DayOfWeek.Sunday" WeekStartDay=DayOfWeek.Monday ThirdWeekendDay="DayOfWeek.Wednesday" @bind-Persian="Calendar1" Label="arsalan" />
+<PersianDatePicker SecondWeekendDay="DayOfWeek.Monday" WeekStartDay=DayOfWeek.Thursday ThirdWeekendDay="DayOfWeek.Tuesday" @bind-Persian="Calendar2" Label="arsalan" />
+<PersianDatePicker FirstWeekendDay="DayOfWeek.Monday" SecondWeekendDay="DayOfWeek.Saturday" WeekStartDay=DayOfWeek.Wednesday ThirdWeekendDay="DayOfWeek.Thursday" @bind-Persian="Calendar3" Label="arsalan" />
 
 
 
@@ -16,22 +16,21 @@
     private PersianCalendarClass Calendar1;
     private PersianCalendarClass Calendar2;
     private PersianCalendarClass Calendar3;
-    private PersianDatePicker datePicker1;
-    private PersianDatePicker datePicker2;
-    private PersianDatePicker datePicker3;
 
     protected override void OnInitialized()
     {
-        Calendar1 = new(DateTime.Today.AddDays(1));
-        Calendar2 = new(1403, 5, 6, CalendarType.Persian);
-        Calendar3 = new(2025, 3, 5, CalendarType.Gregorian);
+        Calendar1 = new(DateTime.Today.AddDays(1),'&');
+        Calendar2 = new(1403, 5, 6, CalendarType.Persian,'-');
+        Calendar3 = new(2025, 3, 5, CalendarType.Gregorian,',');
+        var t = new DateTime(9999,12,31);
+        printe();
         base.OnInitialized();
     }
 
     void printe()
     {
-        Console.WriteLine(datePicker1.Gregorian.DayOfWeek);
-        Console.WriteLine(datePicker2.Persian.DayOfYear);
-        Console.WriteLine(datePicker3.Gregorian.DayOfWeek);
+        Console.WriteLine(Calendar1.GregorianDate);
+        Console.WriteLine(Calendar2.Date);
+        Console.WriteLine(Calendar3.Gregorian.DayOfYear);
     }
 }
