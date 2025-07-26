@@ -45,6 +45,7 @@
                     ResetValueOnEmptyText="true"
                     Clearable="true"
                     MaxItems="100"
+                    Required=@((IsException && !string.IsNullOrWhiteSpace(dto.DistributorName))||!IsException)
                     Disabled=@(IsException && !string.IsNullOrWhiteSpace(dto.DistributorName)) />
 
                     <MudAutocomplete Class="mt-5" T="string"
@@ -56,6 +57,7 @@
                     ResetValueOnEmptyText="true"
                     Clearable="true"
                     MaxItems="100"
+                    Required=@((IsException && !string.IsNullOrWhiteSpace(dto.DriverName))||!IsException)
                     Disabled=@(IsException && !string.IsNullOrWhiteSpace(dto.DriverName)) />
 
                     <MudAutocomplete Class="mt-5" T="string"
@@ -81,9 +83,7 @@
                     Disabled=IsException
                     Required=@(!IsException) />
 
-                    @* <div class="mt-5">
-                        <PersianDatePicker @bind-Value="dto.ShipmentDatePersian" />
-                    </div> *@
+                    <PersianDatePicker @bind-Persian="persian" Required="true" />
 
                     <MudNumericField Class="mt-5" @bind-Value="dto.InvoiceCount" Label="تعداد فاکتور" Variant="Variant.Outlined" Min="0" Disabled=IsException Required=@(!IsException) />
                     <MudNumericField Class="mt-5" @bind-Value="dto.InvoiceAmount" Label="ریال فاکتور" Variant="Variant.Outlined" Min="0" Disabled=IsException Required=@(!IsException) />
@@ -96,7 +96,8 @@
                             Label="خروجی"
                             @bind-Value="dto.ShipmentNumbers[index]"
                             Variant="Variant.Outlined"
-                            Disabled=IsException />
+                            Disabled=IsException
+                            Required=!IsException />
 
                             <MudButton @onclick="@(() => DecrementShipmentCount(index))" Class=@(IsException?"invisible":"visible")>
                                 <MudIcon Icon="@Icons.Material.Outlined.RemoveCircleOutline" Color="Color.Error" Size="Size.Small" />
@@ -124,7 +125,7 @@
 
                     <MudButton Variant="Variant.Outlined" onclick="ClearForm">پاک کردن</MudButton>
                     <MudButton Variant="Variant.Outlined" OnClick=Cancel>انصراف</MudButton>
-                    <MudButton Variant="Variant.Outlined" OnClick=AddShipmentToList ButtonType=ButtonType.Submit Disabled=!IsSuccess()>ذخیره</MudButton>
+                    <MudButton Variant="Variant.Outlined" OnClick=AddShipmentToList ButtonType=ButtonType.Submit>ذخیره</MudButton>
                 </MudItem>
             </MudGrid>
         </MudContainer>
@@ -136,7 +137,7 @@
 
     private MudForm form;
     private ShipmentAddDto dto = new();
-    //private PersianCalendarClass Persian = new();
+    private PersianCalendarClass persian;
 
     private bool isSecondService = false;
     private bool isThirdService = false;
@@ -160,6 +161,7 @@
             if (isException)
             {
                 dto = new();
+                dto.IsException = IsException;
                 dto.ShipmentNumbers.Add(0);
                 IsSecondService = false;
             }
@@ -223,7 +225,11 @@
 
     protected override async Task OnInitializedAsync()
     {
-        //Persian.GregorianDate = DateTime.Today;
+        IsException = false;
+        IsSecondService = false;
+        IsThirdService = false;
+        persian = new(DateTime.Today.AddDays(0));
+        dto.ShipmentDateGregorian = persian.GregorianDate;
         dto.ShipmentNumbers.Add(0);
         LoadData(isException);
     }
@@ -282,13 +288,18 @@
                 return !string.IsNullOrWhiteSpace(dto.DistributorName) && !string.IsNullOrWhiteSpace(dto.DriverName) && !string.IsNullOrWhiteSpace(dto.RouteName) && !string.IsNullOrWhiteSpace(dto.WarehouseName) && dto.SecondServiceInvoiceAmount != 0 && dto.SecondServiceInvoiceCount != 0 && dto.InvoiceCount != 0 && dto.InvoiceAmount != 0 && dto.ThirdServiceInvoiceCount != 0 && dto.ThirdServiceInvoiceAmount != 0 && !string.IsNullOrWhiteSpace(dto.ShipmentDatePersian);
 
             else
-                return !string.IsNullOrWhiteSpace(dto.DistributorName) && !string.IsNullOrWhiteSpace(dto.DriverName) && !string.IsNullOrWhiteSpace(dto.RouteName) && !string.IsNullOrWhiteSpace(dto.WarehouseName) && dto.InvoiceCount != 0 && dto.InvoiceAmount != 0 && !string.IsNullOrWhiteSpace(dto.ShipmentDatePersian);
+            {
+                var msdsd = !string.IsNullOrWhiteSpace(dto.DistributorName) && !string.IsNullOrWhiteSpace(dto.DriverName) && !string.IsNullOrWhiteSpace(dto.RouteName) && !string.IsNullOrWhiteSpace(dto.WarehouseName) && dto.InvoiceCount != 0 && dto.InvoiceAmount != 0 && !string.IsNullOrWhiteSpace(dto.ShipmentDatePersian);
+                return msdsd;
+            }
         }
     }
 
     private async Task AddShipmentToList()
     {
-        if (!IsSuccess())
+        await form.Validate();
+
+        if (!form.IsValid && !dto.ShipmentNumbers.Any(n => n > 0))
             return;
 
         dto.IsException = IsException;
@@ -296,6 +307,7 @@
         dto.DistributorPersonnelCode = dbContext.Distributors.FirstOrDefault(d => d.Name == dto.DistributorName)!.PersonnelCode;
 
         var shipment = new Shipment();
+        shipment.ShipmentDateGregorian = persian.GregorianDate;
         foreach (var number in dto.ShipmentNumbers)
         {
             if (number != 0)

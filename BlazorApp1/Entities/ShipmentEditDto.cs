@@ -1,4 +1,5 @@
-﻿using System.Globalization;
+﻿using System.ComponentModel.DataAnnotations;
+using System.Globalization;
 
 namespace BlazorApp1.Entities;
 
@@ -119,15 +120,15 @@ public class ShipmentAddDto
     public string DistributorName { get; set; }
     public string RouteName { get; set; }
     public string WarehouseName { get; set; }
-    public int? InvoiceCount { get; set; } = 0;
-    public long? InvoiceAmount { get; set; } = 0;
+    public int? InvoiceCount { get; set; } 
+    public long? InvoiceAmount { get; set; } 
     public List<int> ShipmentNumbers { get; set; } = [];
     public int? ReturnInvoiceCount { get; set; } = 0;
     public long? ReturnInvoiceAmount { get; set; } = 0;
-    public int? SecondServiceInvoiceCount { get; set; } = 0;
-    public int? ThirdServiceInvoiceCount { get; set; } = 0;
-    public long? SecondServiceInvoiceAmount { get; set; } = 0;
-    public long? ThirdServiceInvoiceAmount { get; set; } = 0;
+    public int? SecondServiceInvoiceCount { get; set; } 
+    public int? ThirdServiceInvoiceCount { get; set; } 
+    public long? SecondServiceInvoiceAmount { get; set; } 
+    public long? ThirdServiceInvoiceAmount { get; set; } 
 
     public bool HasVip { get; set; } = false;
 
