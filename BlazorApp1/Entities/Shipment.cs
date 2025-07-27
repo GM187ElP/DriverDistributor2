@@ -9,23 +9,27 @@ namespace BlazorApp1.Entities;
 public class Shipment
 {
     public long Id { get; set; }
-    public DateTime ShipmentDateGregorian { get; set; }
+    public DateTime? ShipmentDateGregorian { get; set; }
     public string ShipmentDatePersian { get; set; }
     public string Weekday { get; set; } 
     public int? DriverPersonnelCode { get; set; }
     public int? DistributorPersonnelCode { get; set; }
-    public string DriverName { get; set; }
-    public string DistributorName { get; set; } 
+    [ForeignKeyLink(nameof(Driver),"Name")]
+    public string? DriverName { get; set; }
+    [ForeignKeyLink(nameof(Distributor), "Name")]
+    public string? DistributorName { get; set; }
+    [ForeignKeyLink(nameof(Route), "Name")]
     public string RouteName { get; set; }
-    public string WarehouseName { get; set; }
-    public int InvoiceCount { get; set; } = 0;
-    public long InvoiceAmount { get; set; } = 0;
-    public int ReturnInvoiceCount { get; set; } = 0;
-    public long ReturnInvoiceAmount { get; set; } = 0;
-    public int SecondServiceInvoiceCount { get; set; } = 0;
-    public int ThirdServiceInvoiceCount { get; set; } = 0;
-    public long SecondServiceInvoiceAmount { get; set; } = 0;
-    public long ThirdServiceInvoiceAmount { get; set; } = 0;
+    [ForeignKeyLink(nameof(Warehouse), "Name")]
+    public string? WarehouseName { get; set; }
+    public int? InvoiceCount { get; set; } 
+    public long? InvoiceAmount { get; set; } 
+    public int? ReturnInvoiceCount { get; set; } = 0;
+    public long? ReturnInvoiceAmount { get; set; } = 0;
+    public int? SecondServiceInvoiceCount { get; set; } = 0;
+    public int? ThirdServiceInvoiceCount { get; set; } = 0;
+    public long? SecondServiceInvoiceAmount { get; set; } = 0;
+    public long? ThirdServiceInvoiceAmount { get; set; } = 0;
     public bool HasVip { get; set; } = false;
     public bool IsException { get; set; } = false;
 

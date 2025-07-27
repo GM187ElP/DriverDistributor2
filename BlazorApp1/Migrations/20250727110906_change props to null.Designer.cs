@@ -3,6 +3,7 @@ using System;
 using BlazorApp1.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BlazorApp1.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250727110906_change props to null")]
+    partial class changepropstonull
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "9.0.7");
@@ -131,6 +134,7 @@ namespace BlazorApp1.Migrations
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("WarehouseName")
+                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Weekday")
@@ -197,7 +201,9 @@ namespace BlazorApp1.Migrations
 
                     b.HasOne("BlazorApp1.Entities.Warehouse", "Warehouse")
                         .WithMany("Shipments")
-                        .HasForeignKey("WarehouseName");
+                        .HasForeignKey("WarehouseName")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Distributor");
 
