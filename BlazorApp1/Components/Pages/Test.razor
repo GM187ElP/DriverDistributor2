@@ -4,33 +4,18 @@
 
 
 
-<PersianDatePicker SecondWeekendDay="DayOfWeek.Sunday" WeekStartDay=DayOfWeek.Monday ThirdWeekendDay="DayOfWeek.Wednesday" @bind-Persian="Calendar1" Label="arsalan" />
-<PersianDatePicker SecondWeekendDay="DayOfWeek.Monday" WeekStartDay=DayOfWeek.Thursday ThirdWeekendDay="DayOfWeek.Tuesday" @bind-Persian="Calendar2" Label="arsalan" />
-<PersianDatePicker FirstWeekendDay="DayOfWeek.Monday" SecondWeekendDay="DayOfWeek.Saturday" WeekStartDay=DayOfWeek.Wednesday ThirdWeekendDay="DayOfWeek.Thursday" @bind-Persian="Calendar3" Label="arsalan" />
+<PersianDatePicker @bind-Persian="Calendar2" />
 
 
 
 @code {
     // private PersianDatePicker datePicker1;
 
-    private PersianCalendarClass Calendar1;
     private PersianCalendarClass Calendar2;
-    private PersianCalendarClass Calendar3;
 
     protected override void OnInitialized()
     {
-        Calendar1 = new(DateTime.Today.AddDays(1),'&');
-        Calendar2 = new(1403, 5, 6, CalendarType.Persian,'-');
-        Calendar3 = new(2025, 3, 5, CalendarType.Gregorian,',');
-        var t = new DateTime(9999,12,31);
-        printe();
         base.OnInitialized();
-    }
-
-    void printe()
-    {
-        Console.WriteLine(Calendar1.GregorianDate);
-        Console.WriteLine(Calendar2.Date);
-        Console.WriteLine(Calendar3.Gregorian.DayOfYear);
+        Calendar2 = new(1403, 5, 6, CalendarType.Persian, isEmptyAtStart: true);
     }
 }
