@@ -1,10 +1,12 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System.Collections.ObjectModel;
+using System.ComponentModel.DataAnnotations;
 using System.Globalization;
 
 namespace BlazorApp1.Entities;
 
 public class ShipmentEditDto
 {
+    public long Id { get; set; }
     public DateTime? ShipmentDateGregorian { get; set; }
     public string ShipmentDatePersian { get; set; }
     public string Weekday { get; set; }

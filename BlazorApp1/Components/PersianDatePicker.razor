@@ -232,7 +232,7 @@
     [Parameter] public Expression<Func<PersianCalendarClass>>? For { get; set; }
 
     [Parameter] public string Label { get; set; } = "تاریخ";
-    [Parameter] public EventCallback<PersianCalendarClass?> PersianChanged { get; set; }
+    //[Parameter] public EventCallback<PersianCalendarClass?> PersianChanged { get; set; }
     [Parameter] public DayOfWeek? WeekStartDay { get; set; } = DayOfWeek.Saturday;
     [Parameter] public DayOfWeek? FirstWeekendDay { get; set; } = DayOfWeek.Friday;
     [Parameter] public DayOfWeek? SecondWeekendDay { get; set; }
@@ -315,7 +315,7 @@
         _selectedYear = _tempYearInput;
 
         Value.GregorianDate = Pc.ToDateTime(date.year, date.month, date.day, 0, 0, 0, 0);
-        await PersianChanged.InvokeAsync(Value);
+        await ValueChanged.InvokeAsync(Value);
         UpdateGridDays();
 
         _isYearPickerOpen = false;
@@ -358,7 +358,7 @@
         var thisMonthLength = Value.NumberOfDaysInMonth;
         var date = ValidatedDate(Value.GregorianDate.AddDays(-thisMonthLength));
         Value.GregorianDate = date;
-        await PersianChanged.InvokeAsync(Value);
+        await ValueChanged.InvokeAsync(Value);
         UpdateGridDays();
     }
 
@@ -378,14 +378,14 @@
         }
 
         Value.GregorianDate = date;
-        await PersianChanged.InvokeAsync(Value);
+        await ValueChanged.InvokeAsync(Value);
         UpdateGridDays();
     }
 
     private async Task SelectDay(DateTime date) // daysgrid onclick event
     {
         Value.GregorianDate = date;
-        await PersianChanged.InvokeAsync(Value);
+        await ValueChanged.InvokeAsync(Value);
 
         UpdateGridDays();
         _isDatePickerOpen = false;
@@ -401,7 +401,7 @@
         _selectedYear = Pc.GetYear(date);
 
         UpdateGridDays();
-        await PersianChanged.InvokeAsync(Value);
+        await ValueChanged.InvokeAsync(Value);
         _isDatePickerOpen = false;
     }
 

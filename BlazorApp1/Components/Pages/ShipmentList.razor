@@ -75,6 +75,16 @@
                         </CellTemplate>
                     </TemplateColumn>
 
+                    <TemplateColumn HeaderStyle="background-color: #1976d2; color: white;"
+                    Title="ثبت مرجوعی" Filterable="false" StickyRight="true">
+                        <CellTemplate Context="row">
+                            <MudIconButton Icon="@Icons.Material.Filled.Edit"
+                            Color="Color.Primary"
+                            Size="Size.Small"
+                            OnClick="@(() => RegisterReturn(row.Item))" />
+                        </CellTemplate>
+                    </TemplateColumn>
+
 
 
                     <PropertyColumn Property="x => x.Shipment.ShipmentDatePersian" HeaderStyle="background-color: #1976d2; color: white;" Title="تاریخ" Filterable="false" StickyRight="true" />
@@ -211,7 +221,9 @@
         nm.NavigateTo($"/edit-shipment/{row.Shipment.Id}");
     }
 
-
-
+    void RegisterReturn(ShipmentWithIndex row)
+    {
+        nm.NavigateTo($"/register-return/{row.Shipment.Id}");
+    }
 }
 
