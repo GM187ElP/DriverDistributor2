@@ -20,7 +20,7 @@
             <MudGrid>
                 <MudItem xs="4" sm="6" md="4">
                     <MudNumericField Class="mt-5" @bind-Value="shipment.InvoiceCount" Label="تعداد فاکتورها" Disabled=true ReadOnly=true Variant="Variant.Outlined" Min="0"
-                                     ErrorText="لطفا تعداد فاکتورها را وارد کنید" />
+                    ErrorText="لطفا تعداد فاکتورها را وارد کنید" />
 
                     <MudNumericField Class="mt-5" @bind-Value="shipment.InvoiceAmount" Label="جمع ریال فاکتورها" Disabled=true ReadOnly=true Variant="Variant.Outlined" Format="N0" DebounceInterval="0" Immediate=true Min="0" ErrorText="لطفا جمع ریال فاکتورها را وارد کنید" />
 
@@ -29,18 +29,18 @@
                     </MudStack>
                     <MudNumericField @bind-Value="shipment.SecondServiceInvoiceCount" Label="تعداد فاکتورها" Disabled=true ReadOnly=true Variant="Variant.Outlined" Min="0" ErrorText="لطفا تعداد فاکتورها را وارد کنید" />
                     <MudNumericField Class="mt-5" @bind-Value="shipment.SecondServiceInvoiceAmount" Label="جمع ریال فاکتورها" Disabled=true ReadOnly=true Variant="Variant.Outlined" Format="N0" Immediate=true Min="0"
-                                     ErrorText="لطفا جمع ریال فاکتورها را وارد کنید" />
+                    ErrorText="لطفا جمع ریال فاکتورها را وارد کنید" />
                     <MudStack Row=true AlignItems="AlignItems.Center" Justify="Justify.Center" Spacing="1">
                         <MudText Typo="Typo.h6">سرویس سوم</MudText>
                     </MudStack>
                     <MudNumericField @bind-Value="shipment.ThirdServiceInvoiceCount" Label="تعداد فاکتورها" Disabled=true ReadOnly=true Variant="Variant.Outlined" Min="0" ErrorText="لطفا تعداد فاکتورها را وارد کنید" />
                     <MudNumericField Class="mt-5" @bind-Value="shipment.ThirdServiceInvoiceAmount" Label="جمع ریال فاکتورها" Disabled=true ReadOnly=true Variant="Variant.Outlined" Format="N0" Immediate=true Min="0"
-                                     ErrorText="لطفا جمع ریال فاکتورها را وارد کنید" />
+                    ErrorText="لطفا جمع ریال فاکتورها را وارد کنید" />
 
                 </MudItem>
                 <MudItem xs="12" sm="6" md="4">
-                    <MudNumericField Class="mt-5" @bind-Value="returnInvoiceCount" Label="تعداد فاکتورهای مرجوعی" Variant="Variant.Outlined" Immediate=true Min="0" Max="shipment.InvoiceCount"
-                                     ErrorText="لطفا تعداد فاکتورها را وارد کنید" Disabled="shipment.InvoiceCount==null" />
+                    <MudNumericField Class="mt-5" @bind-Value="returnInvoiceCount" Label="تعداد فاکتورهای مرجوعی" Validation="@(()=>Validate())" Variant="Variant.Outlined" Immediate=true Min="0" Max="shipment.InvoiceCount"
+                    ErrorText="لطفا تعداد فاکتورها را وارد کنید" Disabled="shipment.InvoiceCount==null" />
 
                     <MudNumericField Class="mt-5" @bind-Value="returnInvoiceAmount" Label="جمع ریال فاکتورهای مرجوعی" Variant="Variant.Outlined" Format="N0" DebounceInterval="0" Immediate=true Min="0" Max="shipment.InvoiceAmount" ErrorText="لطفا جمع ریال فاکتورها را وارد کنید" Disabled="shipment.InvoiceCount==null" />
 
@@ -51,7 +51,7 @@
                     <MudNumericField @bind-Value="secondReturnInvoiceCount" Label="تعداد فاکتورهای مرجوعی" Variant="Variant.Outlined" Immediate=true Min="0" Max="shipment.SecondServiceInvoiceCount??0" ErrorText="لطفا تعداد فاکتورها را وارد کنید" Disabled="shipment.SecondServiceInvoiceCount==null" />
 
                     <MudNumericField Class="mt-5" @bind-Value="secondReturnInvoiceAmount" Label="جمع ریال فاکتورهای مرجوعی" Variant="Variant.Outlined" Format="N0" Immediate=true Min="0" Max="shipment.SecondServiceInvoiceAmount??0" Disabled=@(shipment.SecondServiceInvoiceCount==null)
-                                     ErrorText="لطفا جمع ریال فاکتورها را وارد کنید" />
+                    ErrorText="لطفا جمع ریال فاکتورها را وارد کنید" />
 
                     <MudStack Row=true AlignItems="AlignItems.Center" Justify="Justify.Center" Spacing="1">
                         <MudText Typo="Typo.h6">سرویس سوم</MudText>
@@ -60,12 +60,18 @@
                     <MudNumericField @bind-Value="thirdReturnInvoiceCount" Label="تعداد فاکتورهای مرجوعی" Variant="Variant.Outlined" Immediate=true Min="0" Max="shipment.ThirdServiceInvoiceCount??0" ErrorText="لطفا تعداد فاکتورها را وارد کنید" Disabled=@(shipment.ThirdServiceInvoiceCount==null) />
 
                     <MudNumericField Class="mt-5" @bind-Value="thirdReturnInvoiceAmount" Label="جمع ریال فاکتورهای مرجوعی" Variant="Variant.Outlined" Format="N0" Immediate=true Min="0" Max="shipment.ThirdServiceInvoiceAmount??0" Disabled=@(shipment.ThirdServiceInvoiceCount==null )
-                                     ErrorText="لطفا جمع ریال فاکتورها را وارد کنید" />
+                    ErrorText="لطفا جمع ریال فاکتورها را وارد کنید" />
                 </MudItem>
+
+
+
+
+
+
 
                 <MudItem xs="12" sm="6" md="4">
                     <MudNumericField Class="mt-5" Value="NetInvoiceCount" Label="تعداد خالص" Disabled=true ReadOnly=true Variant="Variant.Outlined" Min="0"
-                                     ErrorText="لطفا تعداد فاکتورها را وارد کنید" />
+                    ErrorText="لطفا تعداد فاکتورها را وارد کنید" />
 
                     <MudNumericField Class="mt-5" Value="NetInvoiceAmount" Label="ریال خالص" Disabled=true ReadOnly=true Variant="Variant.Outlined" Format="N0" DebounceInterval="0" Immediate=true Min="0" ErrorText="لطفا جمع ریال فاکتورها را وارد کنید" />
 
@@ -76,7 +82,7 @@
                     <MudNumericField Value="SecondServiceNetInvoiceCount" Label="تعداد خالص" Disabled=true ReadOnly=true Variant="Variant.Outlined" Min="0" ErrorText="لطفا تعداد فاکتورها را وارد کنید" />
 
                     <MudNumericField Class="mt-5" Value="SecondServiceNetInvoiceAmount" Label="ریال خالص" Disabled=true ReadOnly=true Variant="Variant.Outlined" Format="N0" Immediate=true Min="0"
-                                     ErrorText="لطفا جمع ریال فاکتورها را وارد کنید" />
+                    ErrorText="لطفا جمع ریال فاکتورها را وارد کنید" />
 
                     <MudStack Row=true AlignItems="AlignItems.Center" Justify="Justify.Center" Spacing="1">
                         <MudText Typo="Typo.h6">سرویس سوم</MudText>
@@ -85,19 +91,19 @@
                     <MudNumericField Value="ThirdServiceNetInvoiceCount" Label="تعداد خالص" Disabled=true ReadOnly=true Variant="Variant.Outlined" Min="0" ErrorText="لطفا تعداد فاکتورها را وارد کنید" />
 
                     <MudNumericField Class="mt-5" Value="ThirdServiceNetInvoiceAmount" Label="ریال خالص" Disabled=true ReadOnly=true Variant="Variant.Outlined" Format="N0" Immediate=true Min="0"
-                                     ErrorText="لطفا جمع ریال فاکتورها را وارد کنید" />
+                    ErrorText="لطفا جمع ریال فاکتورها را وارد کنید" />
 
                     <MudNumericField Class="mt-5" Value="TotalNetInvoiceCount" Label="تعداد خالص" Disabled=true ReadOnly=true Variant="Variant.Outlined" Format="N0" Immediate=true Min="0"
-                                     ErrorText="لطفا جمع ریال فاکتورها را وارد کنید" />
+                    ErrorText="لطفا جمع ریال فاکتورها را وارد کنید" />
 
                     <MudNumericField Class="mt-5" Value="TotalNetInvoiceAmount" Label="ریال خالص" Disabled=true ReadOnly=true Variant="Variant.Outlined" Format="N0" Immediate=true Min="0"
-                                     ErrorText="لطفا جمع ریال فاکتورها را وارد کنید" />
+                    ErrorText="لطفا جمع ریال فاکتورها را وارد کنید" />
                 </MudItem>
 
                 <MudStack Class="mt-5" Row=true AlignItems="AlignItems.Center" Justify="Justify.Center" Spacing="1">
                     <MudButton Variant="Variant.Filled" Color="Color.Error" onclick="ClearForm"><MudText Typo="Typo.h6">پاک کردن</MudText></MudButton>
                     <MudButton Variant="Variant.Filled" Color="Color.Warning" OnClick=Cancel><MudText Typo="Typo.h6">انصراف</MudText></MudButton>
-                    <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick=AddShipmentToList ButtonType=ButtonType.Submit><MudText Typo="Typo.h6">ذخیره</MudText></MudButton>
+                    <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick=AddShipmentToList  ButtonType=ButtonType.Submit><MudText Typo="Typo.h6">ذخیره</MudText></MudButton>
                 </MudStack>
             </MudGrid>
         </MudContainer>
@@ -106,25 +112,25 @@
 
 <style>
     .same-height {
-        height: 56px;
+    height: 56px;
     }
 
     .item-template {
-        font-size: 1.2rem;
-        padding: 8px 16px;
-        text-align: center;
-        font-family: 'Iranian Sans', sans-serif;
+    font-size: 1.2rem;
+    padding: 8px 16px;
+    text-align: center;
+    font-family: 'Iranian Sans', sans-serif;
     }
 
     .autocomplete-container, .autocomplete-container * {
-        text-align: center;
-        font-size: 1.2rem;
-        font-family: 'Iranian Sans', sans-serif;
+    text-align: center;
+    font-size: 1.2rem;
+    font-family: 'Iranian Sans', sans-serif;
     }
 
     .align-center {
-        display: flex;
-        align-items: center;
+    display: flex;
+    align-items: center;
     }
 </style>
 
@@ -155,6 +161,11 @@
     private async Task LoadShipment()
     {
         shipment = await dbContext.Shipments.FirstOrDefaultAsync(s => s.Id == Id) ?? new();
+    }
+
+    private bool Validate()
+    {
+        if
     }
 
     protected override async Task OnInitializedAsync()
