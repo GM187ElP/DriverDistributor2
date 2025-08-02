@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Isopoh.Cryptography.Argon2;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Security.Claims;
 
@@ -11,14 +12,16 @@ public interface SoftDelete
 
 public class User : SoftDelete
 {
+    //public User(string username)
+    //{
+    //    Username = username.Trim();
+    //}
+
     public int Id { get; set; }
-    public int Username { get; set; }
+    public string Username { get; set; }
     public bool IsDeleted { get; set; } = false;
     public string PasswordHash { get; set; }
-    [NotMapped]
-    public bool IsPersistence { get; set; }
     public ICollection<UserRole> UserRoles { get; set; }
-    public ICollection<UserClaim> UserClaims { get; set; }
 }
 
 public class Role : SoftDelete
@@ -29,7 +32,6 @@ public class Role : SoftDelete
     public string Name { get => role; set { role = value?.ToUpper(); } }
     public bool IsDeleted { get; set; }
     public ICollection<UserRole> UserRoles { get; set; } = new HashSet<UserRole>();
-    public ICollection<RoleClaim> RoleClaims { get; set; } = new HashSet<RoleClaim>();
 }
 
 public class UserRole : SoftDelete
@@ -41,29 +43,29 @@ public class UserRole : SoftDelete
     public bool IsDeleted { get; set; }
 }
 
-public class UserClaim : SoftDelete
-{
-    private string claimType;
-    private string claimValue;
+//public class UserClaim : SoftDelete
+//{
+//    private string claimType;
+//    private string claimValue;
 
-    public int Id { get; set; }
-    public int UserId { get; set; }
-    public string ClaimType { get => claimType; set { claimType = value?.ToUpper(); } }
-    public string ClaimValue { get => claimValue; set { claimValue = value?.ToUpper(); } }
-    public bool IsDeleted { get; set; }
-    public User User { get; set; }
-}
+//    public int Id { get; set; }
+//    public int UserId { get; set; }
+//    public string ClaimType { get => claimType; set { claimType = value?.ToUpper(); } }
+//    public string ClaimValue { get => claimValue; set { claimValue = value?.ToUpper(); } }
+//    public bool IsDeleted { get; set; }
+//    public User User { get; set; }
+//}
 
-public class RoleClaim : SoftDelete
-{
-    private string claimType;
-    private string claimValue;
+//public class RoleClaim : SoftDelete
+//{
+//    private string claimType;
+//    private string claimValue;
 
-    public int Id { get; set; }
-    public int RoleId { get; set; }
-    public string ClaimType { get => claimType; set { claimType = value?.ToUpper(); } }
-    public string ClaimValue { get => claimValue; set { claimValue = value?.ToUpper(); } }
-    public bool IsDeleted { get; set; }
-    public Role Role { get; set; }
-}
+//    public int Id { get; set; }
+//    public int RoleId { get; set; }
+//    public string ClaimType { get => claimType; set { claimType = value?.ToUpper(); } }
+//    public string ClaimValue { get => claimValue; set { claimValue = value?.ToUpper(); } }
+//    public bool IsDeleted { get; set; }
+//    public Role Role { get; set; }
+//}
 

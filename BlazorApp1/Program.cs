@@ -1,6 +1,7 @@
 using BlazorApp1.Components;
 using BlazorApp1.Data;
 using BlazorApp1.Services;
+using BlazorApp1.Services.Entities;
 using BlazorApp1.ValidationAttributes;
 using Microsoft.EntityFrameworkCore;
 using MudBlazor.Services;
@@ -15,6 +16,11 @@ builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 
 builder.Services.AddScoped<DataServices>();
+builder.Services.AddScoped<UserServices>();
+
+builder.Services.AddHttpContextAccessor();
+builder.Services.AddScoped<ICurrentUser,CurrentUser> ();
+
 
 var dbPath = Path.Combine(env.ContentRootPath, "App_Data", "1404.db");
 builder.Services.AddDbContext<AppDbContext>(options =>

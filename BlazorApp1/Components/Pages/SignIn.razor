@@ -1,5 +1,57 @@
-﻿<h3>SignIn</h3>
+﻿@page "/sign-in"
+@using System.ComponentModel.DataAnnotations
+@using BlazorApp1.Entities
+@using BlazorApp1.Services.Entities
+@inject UserServices userServices
+@inject NavigationManager NM
+
+<h3>SignIn</h3>
+
+
+
+
 
 @code {
+    public SignInUserDto dto { get; set; }
 
+    protected override Task OnInitializedAsync()
+    {
+        dto = new();
+        return base.OnInitializedAsync();
+    }
+
+    private async Task UserSignInAsync(SignInUserDto dto)
+    {
+        var user = new User()
+            {
+                Username = dto.UserName.Trim(),
+            };
+
+        var signInResult = await userServices.SignInAsync(user, dto.Password!, dto.IsPersistence);
+        if (signInResult)
+        {
+            NM.NavigateTo("/");
+        }
+    }
+    
+
+    public class SignInUserDto
+    {
+        private string? username = null;
+
+        [Required(ErrorMessage = "لطفا نام کاربری را وارد کنید")]
+        [Display(Name = "نام کاربری")]
+        public string? UserName { get => username; set { username = value!.Trim(); } }
+
+        [Required(ErrorMessage = "لطفا رمز عبور را وارد کنید")]
+        [Display(Name = "رمز عبور")]
+        [DataType(DataType.Password)]
+        public string? Password { get; set; } = null;
+
+        [Required]
+        [DataType(DataType.Password)]
+        [Compare("Password", ErrorMessage = "رمز عبور و تکرار رمز عبور یکسان نمی باشند")]
+        [Display(Name = "تکرار رمز عبور")]
+        public bool IsPersistence { get; set; } = false;
+    }
 }

@@ -1,0 +1,95 @@
+﻿@page "/add-user"
+@using BlazorApp1.Entities
+@using System.ComponentModel.DataAnnotations
+@using BlazorApp1.Services.Entities
+@using Isopoh.Cryptography.Argon2
+@using System.ComponentModel
+@using System.Reflection
+@using static MudBlazor.CategoryTypes
+@inject UserServices userServices
+@inject NavigationManager NM
+
+<h3>RegisterUser</h3>
+
+<MudGrid>
+    <MudItem xs="12" sm="7">
+        <MudPaper Class="pa-4">
+            <MudForm @ref="form" Model="dto" @bind-IsValid=@success @bind-Errors="@errors">
+                <MudNumericField  T="long?" label="@(GetDisplayName<AddUserDto>(nameof(dto.UserName)))" @bind-Value=dto.UserName InputType="InputType.Number" AutoFocus=true HideSpinButtons=true />
+                <MudNumericField T="long?" label="@(GetDisplayName<AddUserDto>(nameof(dto.Password)))" @bind-Value=dto.Password InputType="InputType.Number" AutoFocus=true HideSpinButtons=true />
+                <MudNumericField T="long?"  label="@(GetDisplayName<AddUserDto>(nameof(dto.ConfirmPassword)))" @bind-Value=dto.ConfirmPassword InputType="InputType.Number" AutoFocus=true HideSpinButtons=true />
+                <div class="d-flex align-center justify-space-between">
+                    <MudButton ButtonType="ButtonType.Submit" OnClick="AddUserAsync" Variant="Variant.Filled" Color="Color.Primary" Disabled=@(!success)>ذخیره</MudButton>
+                </div>
+            </MudForm>
+        </MudPaper>
+    </MudItem>
+</MudGrid>
+
+@code {
+    private MudForm form;
+    public AddUserDto dto { get; set; }
+    private bool success;
+    private string[]? errors;
+    private string error = string.Empty;
+
+    protected override Task OnInitializedAsync()
+    {
+        dto = new();
+        return base.OnInitializedAsync();
+    }
+
+    public class AddUserDto
+    {
+        [Required(ErrorMessage = "لطفا نام کاربری را وارد کنید")]
+        [Display(Name = "نام کاربری")]
+        public long? UserName { get; set; } = null;
+
+        [Required(ErrorMessage = "لطفا رمز عبور را وارد کنید")]
+        [MinLength(6)]
+        [MaxLength(11)]
+        [Display(Name = "رمز عبور")]
+        [DataType(DataType.Password)]
+        public long? Password { get; set; } = null;
+
+        [Required]
+        [MinLength(6)]
+        [MaxLength(11)]
+        [DataType(DataType.Password)]
+        [Compare("Password", ErrorMessage = "رمز عبور و تکرار رمز عبور یکسان نمی باشند")]
+        [Display(Name = "تکرار رمز عبور")]
+        public long? ConfirmPassword { get; set; } = null;
+    }
+
+    private async Task AddUserAsync()
+    {
+        await form.Validate();
+        if (!form.IsValid)
+            return;
+
+
+        var user = new User()
+            {
+                Username = dto.UserName.ToString().Trim()
+            };
+
+        var result = await userServices.CreateAsync(user, dto.Password.ToString());
+        if (!result.IsSuccess)
+            error = result.Error;
+
+        NM.NavigateTo("/");
+    }
+
+    private string GetDisplayName<T>(string propertyName)
+    {
+        var property = typeof(T).GetProperty(propertyName);
+        if (property == null)
+            return propertyName;
+
+        var attr = property.GetCustomAttribute<DisplayAttribute>();
+        if (attr != null)
+            return attr.Name ?? propertyName;
+
+        return propertyName;
+    }
+}

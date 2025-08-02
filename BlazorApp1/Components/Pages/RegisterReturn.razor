@@ -39,7 +39,7 @@
 
                 </MudItem>
                 <MudItem xs="12" sm="6" md="4">
-                    <MudNumericField Class="mt-5" @bind-Value="returnInvoiceCount" Label="تعداد فاکتورهای مرجوعی" Validation="@(()=>Validate())" Variant="Variant.Outlined" Immediate=true Min="0" Max="shipment.InvoiceCount"
+                    <MudNumericField Class="mt-5" @bind-Value="returnInvoiceCount" Label="تعداد فاکتورهای مرجوعی"  Variant="Variant.Outlined" Immediate=true Min="0" Max="shipment.InvoiceCount"
                     ErrorText="لطفا تعداد فاکتورها را وارد کنید" Disabled="shipment.InvoiceCount==null" />
 
                     <MudNumericField Class="mt-5" @bind-Value="returnInvoiceAmount" Label="جمع ریال فاکتورهای مرجوعی" Variant="Variant.Outlined" Format="N0" DebounceInterval="0" Immediate=true Min="0" Max="shipment.InvoiceAmount" ErrorText="لطفا جمع ریال فاکتورها را وارد کنید" Disabled="shipment.InvoiceCount==null" />
@@ -163,10 +163,6 @@
         shipment = await dbContext.Shipments.FirstOrDefaultAsync(s => s.Id == Id) ?? new();
     }
 
-    private bool Validate()
-    {
-        if
-    }
 
     protected override async Task OnInitializedAsync()
     {
