@@ -3,6 +3,7 @@ using System;
 using BlazorApp1.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BlazorApp1.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250805111754_adding personnel id to user and removing name")]
+    partial class addingpersonnelidtouserandremovingname
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "9.0.8");
@@ -53,6 +56,9 @@ namespace BlazorApp1.Migrations
                     b.Property<string>("PasswordHash")
                         .HasColumnType("TEXT");
 
+                    b.Property<int?>("PersonnelId")
+                        .HasColumnType("INTEGER");
+
                     b.Property<string>("PhoneNumber")
                         .HasColumnType("TEXT");
 
@@ -77,6 +83,8 @@ namespace BlazorApp1.Migrations
                     b.HasIndex("NormalizedUserName")
                         .IsUnique()
                         .HasDatabaseName("UserNameIndex");
+
+                    b.HasIndex("PersonnelId");
 
                     b.ToTable("AspNetUsers", (string)null);
                 });
@@ -109,8 +117,9 @@ namespace BlazorApp1.Migrations
 
             modelBuilder.Entity("BlazorApp1.Entities.Personnel", b =>
                 {
-                    b.Property<string>("PersonnelCode")
-                        .HasColumnType("TEXT");
+                    b.Property<int>("PersonnelCode")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -378,6 +387,15 @@ namespace BlazorApp1.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
+            modelBuilder.Entity("BlazorApp1.Entities.ApplicationUser", b =>
+                {
+                    b.HasOne("BlazorApp1.Entities.Personnel", "Personnel")
+                        .WithMany("ApplicationUsers")
+                        .HasForeignKey("PersonnelId");
+
+                    b.Navigation("Personnel");
+                });
+
             modelBuilder.Entity("BlazorApp1.Entities.Shipment", b =>
                 {
                     b.HasOne("BlazorApp1.Entities.Distributor", "Distributor")
@@ -477,6 +495,11 @@ namespace BlazorApp1.Migrations
             modelBuilder.Entity("BlazorApp1.Entities.Driver", b =>
                 {
                     b.Navigation("Shipments");
+                });
+
+            modelBuilder.Entity("BlazorApp1.Entities.Personnel", b =>
+                {
+                    b.Navigation("ApplicationUsers");
                 });
 
             modelBuilder.Entity("BlazorApp1.Entities.Route", b =>

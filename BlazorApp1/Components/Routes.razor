@@ -1,6 +1,27 @@
-﻿<Router AppAssembly="typeof(Program).Assembly">
+﻿
+
+
+
+
+
+
+<Router AppAssembly="typeof(Program).Assembly">
     <Found Context="routeData">
-        <RouteView RouteData="routeData" DefaultLayout="typeof(Layout.MainLayout)" />
+        <AuthorizeRouteView RouteData="routeData" DefaultLayout="typeof(Layout.MainLayout)" >
+            <Authorizing>
+
+            </Authorizing>
+            <NotAuthorized>
+                شما اجازه مشاهده این صفحه را ندارید
+            </NotAuthorized>
+        </AuthorizeRouteView>
         <FocusOnNavigate RouteData="routeData" Selector="h1" />
     </Found>
+    <NotFound>
+        <CascadingAuthenticationState>
+            <LayoutView>
+                <p>چیزی برای نمایش موجود نیست</p>
+            </LayoutView>
+        </CascadingAuthenticationState>
+    </NotFound>
 </Router>
